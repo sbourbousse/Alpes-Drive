@@ -98,9 +98,16 @@ create table client(
 	clientNom varchar(64),
 	clientTel char(10),
 	clientAdresse varchar(128),
+	clientVille varchar(128),
 	clientCodePostal char(5),
+	localisationId int unsigned references localisation(localisationId),
 	utilisateurMail varchar(128) references utilisateur(utilisateurMail),
 	supprime bool
+)engine=innodb charset=utf8;
+
+create table choisir(
+	clientId int unsigned references client(clientId),
+	pointRelaisId int unsigned references point_relais(pointRelaisId)
 )engine=innodb charset=utf8;
 
 create table proposer(
@@ -142,6 +149,7 @@ create table vente(
     prix float unsigned,
     quantite smallint unsigned,
     dateAjout datetime,
+    dateLimiteVente date,
     valide bool
 )engine=innodb charset=utf8;
 
