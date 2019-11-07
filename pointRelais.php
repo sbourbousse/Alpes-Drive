@@ -114,6 +114,7 @@
 				</p>
 			</form>
 		</div>
+	</div>
 
 	<?php include "assets/footer.inc.php";?>
 

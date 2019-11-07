@@ -65,5 +65,5 @@ session_start();
 </div>
       
     </body>
-    <?php include "assetes/scripts"; ?>
+    <?php include "assets/scripts.php"; ?>
 </html>
