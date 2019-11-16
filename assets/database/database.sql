@@ -132,13 +132,13 @@ create table produit(
     produitId smallint unsigned primary key,
     produitLibelle varchar(128),
     produitImage varchar(256),
+    uniteId tinyint unsigned references unite(uniteId),
     categorieId smallint unsigned references categorie(categorieId)
 )engine=innodb charset=utf8;
 
 create table variete(
     varieteId int unsigned primary key,
     varieteLibelle varchar(128),
-    uniteId tinyint unsigned references unite(uniteId),
     produitId smallint unsigned references produit(produitId)
 )engine=innodb charset=utf8;
 
