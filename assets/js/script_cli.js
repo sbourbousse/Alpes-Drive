@@ -3,9 +3,8 @@ var nbInputVide = 0;
 var prenomEntree = document.getElementById("inputPrenom").value;
 var nomEntree = document.getElementById("inputNom").value;
 var numPortEntree = document.getElementById("inputNumPort").value;
-//var numFixEntree = document.getElementById("inputNumFix").value;
+
 var adresse1Entree = document.getElementById("inputAdresse").value;
-var adresse2Entree = document.getElementById("inputAdresse2").value;
 var villeEntree = document.getElementById("inputVille").value;
 var codePostalEntree = document.getElementById("inputCodePostal").value;
 var emailEntree = document.getElementById("inputEmail").value;
@@ -298,7 +297,7 @@ function chargeListeVilles(){
     if (codePostal.length>=3)
     {
         xhr_object = new XMLHttpRequest();
-        var adresse= "http://127.0.0.1/~sbourbousse/PPE-DRIVE/elements_fixes/listeVilles.php?cp="+codePostal;
+        var adresse= "assets/listeVilles.php?cp="+codePostal;
         //alert (adresse);
         xhr_object.open("GET",adresse, true);
         xhr_object.send(null);
@@ -447,9 +446,7 @@ function verifChamp(element){
 	verifPrenom();
 	verifNom();
 	verifNumPort();
-	verifNumFix();
 	verifAdresse();
-	verifAdresse2();
 	if (element==inputCodePostal)		verifCodePostal();
 	verifEmail();
 	verifMotDePasse();

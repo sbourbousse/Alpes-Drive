@@ -299,7 +299,7 @@ function chargeListeVilles(){
     if (codePostal.length>=3)
     {
         xhr_object = new XMLHttpRequest();
-        var adresse= "http://127.0.0.1/~sbourbousse/PPE-DRIVE/elements_fixes/listeVilles.php?cp="+codePostal;
+        var adresse= "assets/listeVilles.php?cp="+codePostal;
         //alert (adresse);
         xhr_object.open("GET",adresse, true);
         xhr_object.send(null);

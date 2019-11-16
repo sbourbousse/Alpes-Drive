@@ -32,11 +32,7 @@
 						<input class="form-control" name="numPort" id="inputNumPort" placeholder="06 45 21 78 54" type="phonenumber" onkeyup="verifChamp(inputNumPort)" minlength="10" maxlength="10" required>
 						<span id="alertNumPort"></span>
 					</div>
-					<div class="form-group col-md-6">
-						<label for="inputNumFix">Numero de téléphone fixe</label>
-						<input class="form-control" name="numFix" id="inputNumFix" placeholder="04 92 45 14 96" type="phonenumber" onkeyup="verifChamp(inputNumFix)" minlength="10" maxlength="10">
-						<span id="alertNumFix"></span>
-					</div>
+
 				</div>
 				<!--ADRESSE POSTALE-->
 				<div class="form-row">
@@ -55,10 +51,6 @@
 				<div class="form-group">
 					<label for="inputAdresse">Adresse<b class="obligatoire">*</b></label>
 					<input type="text" class="form-control" name="adresse" id="inputAdresse" placeholder="Champs-Elysées" onkeyup="verifChamp(inputAdresse)" minlength="8" maxlength="50" required>
-				</div>
-				<div class="form-group">
-					<label for="inputAdresse2">Adresse 2</label>
-					<input type="text" class="form-control" name="adresse2" id="inputAdresse2" placeholder="Complément d'adresse" onkeyup="verifChamp(inputAdresse2)" minlength="3" maxlength="50">
 				</div>
 				<!-- FIN ADRESSE POSTALE -->
 				<div class="form-group">
