@@ -112,7 +112,7 @@ create table choisir(
 
 create table proposer(
     pointRelaisId int unsigned references point_relais(pointRelaisId),
-    producteurId int unsigned
+    prodId int unsigned references producteur(prodId)
 )engine=innodb charset=utf8;
 
 create table unite(
