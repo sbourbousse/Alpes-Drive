@@ -2,7 +2,7 @@
     $serveur="localhost:3306";
 	$baseName="Alpes_Drive";
 	$mdp="";
-    $user="sylvain";
+    $user="root";
     
     $maBase=new mysqli($serveur,$user,$mdp,$baseName);
         

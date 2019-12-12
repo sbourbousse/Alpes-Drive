@@ -1,13 +1,12 @@
 <?php session_start(); ?>
 <?php
-	include "elements_fixes/connect.php";
-	include_once "./elements_fixes/connect.php";
+	include "assets/connect.php";
 
 	// Variable bouleenne , si la page a été actualisé, la valeur prend "true", sinon la valeur prend "false"
 	$pageWasRefreshed = isset($_SERVER['HTTP_CACHE_CONTROL']) && $_SERVER['HTTP_CACHE_CONTROL'] === 'max-age=0';
 
 	// Si la page à été actualisé, on renvoie la personne à l'accueil
-	if($pageWasRefreshed || ((isset($_POST))) ) {
+	if($pageWasRefreshed || (!(isset($_POST))) ) {
 	   $error=1;
 	}
 	// Sinon
@@ -16,7 +15,7 @@
 		// Si il existe des variable POST ( formulaire ) on verifie que l'email n'existe pas déjà dans la base de données et on verifie que tout les champs sont bien remplis
 		if (isset($_POST))
 		{
-			$reqVerif='SELECT userMail FROM User WHERE userMail = \''.$_POST['email'].'\';';
+			$reqVerif='SELECT utilisateurMail FROM utilisateur WHERE utilisateurMail = \''.$_POST['email'].'\';';
 			$res=mysqli_query($maBase,$reqVerif);
 			$row=mysqli_fetch_row($res);
 
@@ -30,8 +29,6 @@
 
 			// Variables de verification
 			$inputVide         = 0;
-			$inputFixeVide     = 0;
-			$inputAdresse2Vide = 0;
 			$compteur          = 0;
 			$validation        = 0;
 
@@ -42,32 +39,18 @@
 
 			// Verification que tout les champs sont bien remplis (sauf facultatifs)
 			foreach ($_POST as $valeur) {
-				if ($compteur == 3 || $compteur == 7) {
-					if (empty($valeur) && $compteur == 3) // Verification de l'input facultatif numero 1 dans la case 3 du tableau
-						{
-						$inputFixeVide = 1;
-					}
-					if (empty($valeur) && $compteur == 7) {
-						$inputAdresse2Vide = 1; // Verification de l'input facultatif numero 2 dans la case 5 du tableau
-					}
-				} 
-				else if (empty($valeur)) 
+				if (empty($valeur)) 
 				{
 					$inputVide = 1; //Si un seul des champs obligatoir est vide, inputVide recoit 1
 					echo "L'input ".$compteur." est vide \n";
+					header("location:./producteur.php"); //Renvoi a la page d'inscription
+					$validation = 0;
 				}
 				$compteur++;
 			}
 		}
-		// Si un des champs obligatoire est manquant
-		if ($inputVide == 1) {
-			//echo "Un ou des champs obligatoire sont manquant ";
-			//print_r($_POST);
-			header("location:./producteur.php"); //Renvoi a la page d'inscription
-			$validation = 0;
-		}
 		// Sinon, on passe à une verification plus minutieuse, la variable validation passe à 1 si un des champs n'est pas correctement rempli
-		else
+		if($inputVide!=1)
 			{
 			$validation = 1;
 			//verification du prenom
@@ -80,20 +63,8 @@
 			if ((strlen($_POST['numPort']) != 10) && $validation == 1) {
 				$validation = 0;
 			}
-			if ($inputFixeVide == 0) {
-				if ((strlen($_POST['numFix']) != 10) && $validation == 1) //si le champs est pas vide
-					{
-					$validation = 0;
-				}
-			}
 			if ((strlen($_POST['adresse']) > 50) && $validation == 1) {
 				$validation = 0;
-			}
-			if ($inputAdresse2Vide == 0) {
-				if ((strlen($_POST['adresse2']) > 50) && $validation == 1) //si le champ est pas vide
-					{
-					$validation = 0;
-				}
 			}
 			if ((strlen($_POST['codePostal']) != 5) && $validation == 1) {
 				$validation = 0;
@@ -126,27 +97,11 @@
 			VALUES ('".$_POST['email']."','".md5($_POST['motDePasse'])."','".$dateInscription."','".$cleMail."','false','".$userType."');";
 			$maBase->query($requete);
 
-			if ($inputFixeVide == 0 && $inputAdresse2Vide == 0) 
-			{
-				//preparation de la requete
-				$requete = "INSERT INTO Producteur ( prodId, prodNom, prodPrenom, prodNumPort, prodNumFixe, prodAdresse, prodAdresse2, prodVille, prodCodePostal, prodNumSiretSiren, userMail) 
-						VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','" . $_POST['numFix'] . "','" . $_POST['adresse'] . "','" . $_POST['adresse2'] . "','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','" . $_POST['numSiretSiren'] . "','".$_POST['email']."');";	
-			} else if ($inputFixeVide == 1) 
-			{
-				//preparation de la requete
-				$requete = "INSERT INTO Producteur ( prodId, prodNom, prodPrenom, prodNumPort, prodNumFixe, prodAdresse, prodAdresse2, prodVille, prodCodePostal, prodNumSiretSiren, userMail) 
-						VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "',NULL,'" . $_POST['adresse'] . "','" . $_POST['adresse2'] . "','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','" . $_POST['numSiretSiren'] . "','".$_POST['email']."');";	
-			} else if ($inputAdresse2Vide == 1) 
-			{
-				//preparation de la requete
-				$requete = "INSERT INTO Producteur ( prodId, prodNom, prodPrenom, prodNumPort, prodNumFixe, prodAdresse, prodAdresse2, prodVille, prodCodePostal, prodNumSiretSiren, userMail) 
-						VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','" . $_POST['numFix'] . "','" . $_POST['adresse'] . "',NULL,'" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','" . $_POST['numSiretSiren'] . "','".$_POST['email']."');";
-			} else if ($inputAdresse2Vide == 1 && $inputFixeVide == 1) {
-				//preparation de la requete
-				$requete = "INSERT INTO Producteur ( prodId, prodNom, prodPrenom, prodNumPort, prodNumFixe, prodAdresse, prodAdresse2, prodVille, prodCodePostal, prodNumSiretSiren, userMail) 
-						VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "',NULL,'" . $_POST['adresse'] . "',NULL,'" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','" . $_POST['numSiretSiren'] . "','".$_POST['email']."');";
+
+			//preparation de la requete
+			$requete = "INSERT INTO Producteur ( prodId, prodNom, prodPrenom, prodNumPort, prodNumFixe, prodAdresse, prodAdresse2, prodVille, prodCodePostal, prodNumSiretSiren, userMail) 
+					VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "',NULL,'" . $_POST['adresse'] . "',NULL,'" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','" . $_POST['numSiretSiren'] . "','".$_POST['email']."');";
 				
-			}
 			// inserer les informations du producteur dans la table producteur
 			$maBase->query($requete);
 		
@@ -167,27 +122,10 @@
 				VALUES ('".$_POST['email']."','".md5($_POST['motDePasse'])."','".$dateInscription."','".$cleMail."','false','".$userType."');";
 				$maBase->query($requete);
 
-				if ($inputFixeVide == 0 && $inputAdresse2Vide == 0) 
-				{
-					//preparation de la requete
-					$requete = "INSERT INTO Client ( cliId, cliNom, cliPrenom, cliNumPort, cliNumFixe, cliAdresse, cliAdresse2, cliVille, cliCodePostal, userMail) 
-							VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','" . $_POST['numFix'] . "','" . $_POST['adresse'] . "','" . $_POST['adresse2'] . "','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['email']."');";	
-				} else if ($inputFixeVide == 1) 
-				{
-					//preparation de la requete
-					$requete = "INSERT INTO Client ( cliId, cliNom, cliPrenom, cliNumPort, cliNumFixe, cliAdresse, cliAdresse2, cliVille, cliCodePostal, userMail) 
-							VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "',NULL,'" . $_POST['adresse'] . "','" . $_POST['adresse2'] . "','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['email']."');";	
-				} else if ($inputAdresse2Vide == 1) 
-				{
-					//preparation de la requete
-					$requete = "INSERT INTO Client ( cliId, cliNom, cliPrenom, cliNumPort, cliNumFixe, cliAdresse, cliAdresse2, cliVille, cliCodePostal, userMail) 
-							VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','" . $_POST['numFix'] . "','" . $_POST['adresse'] . "',NULL,'" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['email']."');";
-				} else if ($inputAdresse2Vide == 1 && $inputFixeVide == 1) {
-					//preparation de la requete
-					$requete = "INSERT INTO Client ( cliId, cliNom, cliPrenom, cliNumPort, cliNumFixe, cliAdresse, cliAdresse2, cliVille, cliCodePostal, userMail) 
-							VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "',NULL,'" . $_POST['adresse'] . "',NULL,'" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['email']."');";
-					
-				}
+				//preparation de la requete
+				$requete = "INSERT INTO Client ( cliId, cliNom, cliPrenom, cliNumPort, cliNumFixe, cliAdresse, cliAdresse2, cliVille, cliCodePostal, userMail) 
+						VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "',NULL,'" . $_POST['adresse'] . "',NULL,'" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['email']."');";
+
 
 				// inserer les informations du client dans la table client
 				$maBase->query($requete);
@@ -207,28 +145,10 @@
 					VALUES ('".$_POST['email']."','".md5($_POST['motDePasse'])."','".$dateInscription."','".$cleMail."','false','".$userType."');";
 					$maBase->query($requete);
 
-					if ($inputFixeVide == 0 && $inputAdresse2Vide == 0) 
-					{
-						//preparation de la requete
-						$requete = "INSERT INTO PointRelais ( pointRelaisId, pointRelaisNomGerant, pointRelaisPrenomGerant, pointRelaisNumPort, pointRelaisNumFixe, pointRelaisAdresse,pointRelaisAdresse2, pointRelaisVille, pointRelaisCodePostal, pointRelaisNumSiretSiren, pointRelaisNomEntreprise, pointRelaisActivite, userMail)
-								VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','" . $_POST['numFix'] . "','" . $_POST['adresse'] . "','" . $_POST['adresse2'] . "','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['numSiretSiren']."','".$_POST['nomEntreprise']."','".$_POST['activite']."','".$_POST['email']."');";	
-					} else if ($inputFixeVide == 1) 
-					{
-						//preparation de la requete
-						$requete = "INSERT INTO PointRelais ( pointRelaisId, pointRelaisNomGerant, pointRelaisPrenomGerant, pointRelaisNumPort, pointRelaisNumFixe, pointRelaisAdresse,pointRelaisAdresse2, pointRelaisVille, pointRelaisCodePostal, pointRelaisNumSiretSiren, pointRelaisNomEntreprise, pointRelaisActivite, userMail)
-								VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','NULL','" . $_POST['adresse'] . "','" . $_POST['adresse2'] . "','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['numSiretSiren']."','".$_POST['nomEntreprise']."','".$_POST['activite']."','".$_POST['email']."');";	
-					} else if ($inputAdresse2Vide == 1) 
-					{
-						//preparation de la requete
-
-						$requete = "INSERT INTO PointRelais ( pointRelaisId, pointRelaisNomGerant, pointRelaisPrenomGerant, pointRelaisNumPort, pointRelaisNumFixe, pointRelaisAdresse,pointRelaisAdresse2, pointRelaisVille, pointRelaisCodePostal, pointRelaisNumSiretSiren, pointRelaisNomEntreprise, pointRelaisActivite, userMail)
-								VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','" . $_POST['numFix'] . "','" . $_POST['adresse'] . "','NULL','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['numSiretSiren']."','".$_POST['nomEntreprise']."','".$_POST['activite']."','".$_POST['email']."');";	
-					} else if ($inputAdresse2Vide == 1 && $inputFixeVide == 1) {
-						//preparation de la requete
-						$requete = "INSERT INTO PointRelais ( pointRelaisId, pointRelaisNomGerant, pointRelaisPrenomGerant, pointRelaisNumPort, pointRelaisNumFixe, pointRelaisAdresse,pointRelaisAdresse2, pointRelaisVille, pointRelaisCodePostal, pointRelaisNumSiretSiren, pointRelaisNomEntreprise, pointRelaisActivite, userMail)
-								VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','NULL','" . $_POST['adresse'] . "','NULL','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['numSiretSiren']."','".$_POST['nomEntreprise']."','".$_POST['activite']."','".$_POST['email']."');";	
+					//preparation de la requete
+					$requete = "INSERT INTO PointRelais ( pointRelaisId, pointRelaisNomGerant, pointRelaisPrenomGerant, pointRelaisNumPort, pointRelaisNumFixe, pointRelaisAdresse,pointRelaisAdresse2, pointRelaisVille, pointRelaisCodePostal, pointRelaisNumSiretSiren, pointRelaisNomEntreprise, pointRelaisActivite, userMail)
+							VALUES ('" . $id . "','" . $_POST['nom'] . "','" . $_POST['prenom'] . "','" . $_POST['numPort'] . "','NULL','" . $_POST['adresse'] . "','NULL','" . $_POST['ville'] . "','" . $_POST['codePostal'] . "','".$_POST['numSiretSiren']."','".$_POST['nomEntreprise']."','".$_POST['activite']."','".$_POST['email']."');";	
 						
-					}
 
 					// inserer les informations du client dans la table client
 					$maBase->query($requete);
@@ -266,7 +186,7 @@
 							</div>
 						</div>
 						<div >
-							<p> Veuillez appuyer sur ce lien d\'activation : http://172.29.56.7/~sbourbousse/PPE-DRIVE/emailConfirm.php?id=' . $id . '&key=' . md5($cleMail) . '&uT=' . $userType . '</p>
+							<p> Veuillez appuyer sur ce lien d\'activation : http://127.0.0.1/~sbourbousse/Alpes-Drive/emailConfirm.php?id=' . $id . '&key=' . md5($cleMail) . '&uT=' . $userType . '</p>
 						</div>
 					</body>
 				</html>';
@@ -289,14 +209,10 @@
 	<head>
 		<meta charset="utf8"/>
 		<title>Confirmation</title>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-        <link rel="stylesheet" type="text/css" href="css/mdb.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-        <link rel="stylesheet" type="text/css" href="css/modules/animations-extended.css">
-		<?php include "elements_fixes/favicon.php"; ?>
+		<?php include "assets/styles.php"; ?>
 	</head>
 	<body class="bg">
-		<?php include('./elements_fixes/navbar.inc.php'); ?>
+		<?php include "assets/navbar.php" ?>	
 
 		<blockquote class="blockquote bq-<? if (isset($email)) echo 'success'; else echo 'warning';?>">
 		<p class="bq-title">Confirmation de votre mail</p>
@@ -333,7 +249,9 @@
 		</p>
 		</blockquote>
 
+	    <?php include "assets/footer.inc.php";?>
 	</body>
 
-		<?php include('./elements_fixes/footer.inc.php'); ?>
+    <?php include "assets/scripts.php"; ?>
+
 </html>
