@@ -158,7 +158,7 @@ create table article(
     venteId int unsigned references vente(venteId),
     quantite smallint unsigned,
     panierDateAjout datetime,
-    pointRelaisId int unsigned references pointRelais(pointRelaisId),
+    pointRelaisId int unsigned references point_relais(pointRelaisId),
     panierDateRecuperer datetime,
     panierId int unsigned references panier(panierId)
 )engine=innodb charset=utf8;
